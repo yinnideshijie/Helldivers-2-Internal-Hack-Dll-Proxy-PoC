@@ -1,6 +1,6 @@
 # Helldivers-2-Internal-Hack-Dll-Proxy-PoC
 
-### This is PoC that i create to learn about dll proxy using C++ on 64bit application / game.
+#### This is PoC that i create to learn about dll proxy using C++ on 64bit application / game.
 
 ### Thanks to cfemen and gir489 for all information and CE Tables.
 
@@ -16,7 +16,7 @@
 ### - Max Resources
 ### - No Recoil
 
-##How to use :
+## How to use :
 ### - Download DLL
 ### - Extract DLL inside helldivers 2 game folder ( same folder as helldivers2.exe ), and rename it to version.dll
 ### - Run Game
