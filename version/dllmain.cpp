@@ -57,7 +57,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
 {
     // Initialize the proxy for the DLL
     dllforward::setup();
-        
+
     //Show Console
     InitializeConsole();
 
@@ -81,7 +81,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
     } while (!moduleHandle);
     Sleep(100);
 
-    
+
 
     printf("[Init] - Helldivers 2 Is Ready \n");
 
@@ -112,7 +112,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
             break;
 
         case 27: // Esc key
-            
+
             break;
 
         default:
@@ -121,7 +121,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
         }
 
     } while (userInput != 13); // Loop until the Esc key is pressed
-    
+
     for (size_t i = 0; i < checkboxes.size(); ++i) {
         if (checkboxes[i].checked)
         {
@@ -140,7 +140,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     };
 
                     uintptr_t InfHealth = Memory::FindPattern("game.dll", "41 8B 84 8B 28 4C 00 00 48 8B 5C 24 20 48 8B 74 24 28");
-                    LPVOID memory = Memory::AllocateMemory(0x1000);
+                    LPVOID memory = Memory::AllocateMemory(InfHealth, 0x100);
                     Memory::CreateTrampoline(InfHealth, memory);
                     Memory::WriteAssemblyInstructions((uintptr_t)memory, InfHealth + 18, InfHealthByte, Memory::ArrayLength(InfHealthByte));
                     gData.InfHealth = !gData.InfHealth;
@@ -154,7 +154,6 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 if (!gData.InfGrenades)
                 {
                     uintptr_t GrenadesAddress = Memory::FindPattern("game.dll", "41 FF 08 4A 8B 84 ED");
-                    printf("[Active] Infinite Health : %p\n", GrenadesAddress);
                     Memory::Nop((LPVOID)(GrenadesAddress), 3);
                     gData.InfGrenades = !gData.InfGrenades;
                     printf("[Active] Infinite Grenades\n");
@@ -189,14 +188,14 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 if (!gData.InfStamina)
                 {
                     uintptr_t Stamina = Memory::FindPattern("game.dll", "F3 41 0F 11 08 8B 48 10 E8 F1");
-                    BYTE StaminaPatch[] = {  0xF3, 0x41, 0x0F, 0x11, 0x30 };
+                    BYTE StaminaPatch[] = { 0xF3, 0x41, 0x0F, 0x11, 0x30 };
                     Memory::Patch((LPVOID)(Stamina), StaminaPatch, 5);
                     gData.InfStamina = !gData.InfStamina;
                     printf("[Active] Infinite Stamina\n");
                 }
             }
 
-            if (checkboxes[i].title == "Inf Strategems") 
+            if (checkboxes[i].title == "Inf Strategems")
             {
                 if (!gData.InfStrategems)
                 {
@@ -204,7 +203,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     uintptr_t Strategems2 = Memory::FindPattern("game.dll", "0F 86 BF 01 00 00 0F");
                     BYTE StrategemsPatch1[] = { 0x8D, 0x01, 0x90 };
                     BYTE StrategemsPatch2[] = { 0x90, 0xE9 };
-                    Memory::Nop((LPVOID)(Strategems+6), 4);
+                    Memory::Nop((LPVOID)(Strategems + 6), 4);
                     Memory::Patch((LPVOID)(Strategems + 25), StrategemsPatch1, 3);
                     Memory::Patch((LPVOID)(Strategems + 33), StrategemsPatch1, 3);
                     Memory::Patch((LPVOID)(Strategems2), StrategemsPatch2, 2);
@@ -239,7 +238,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
 
                     uintptr_t NoReload = Memory::FindPattern("game.dll", "41 89 28 49 8B 84 CA 28 20 00 00 8B 48 10");
 
-                    LPVOID memory = Memory::AllocateMemory(0x1000);
+                    LPVOID memory = Memory::AllocateMemory(NoReload, 0x100);
                     Memory::CreateTrampoline(NoReload, memory);
                     Memory::WriteAssemblyInstructions((uintptr_t)memory, NoReload + 14, NoReloadByte, Memory::ArrayLength(NoReloadByte));
                     gData.NoReload = !gData.NoReload;
@@ -256,13 +255,14 @@ DWORD WINAPI Payload(LPVOID lpParam)
                         0x41, 0x81, 0x84, 0x8A, 0xEC, 0x17, 0x00, 0x00, 0xF4, 0x01, 0x00, 0x00,
                         0x41, 0x81, 0x84, 0x8A, 0xF0, 0x17, 0x00, 0x00, 0xF4, 0x01, 0x00, 0x00,
                         0x41, 0x81, 0x84, 0x8A, 0xF4, 0x17, 0x00, 0x00, 0xF4, 0x01, 0x00, 0x00,
+                        0x48, 0x8D, 0x82, 0x99, 0x00, 0x00, 0x00,
                         0xFF, 0x25, 0x00, 0x00, 0x00, 0x00,  // JMP [rip+6]
                         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // Placeholder for the target address
                     };
 
                     uintptr_t MaxResources = Memory::FindPattern("game.dll", "45 01 B4 8A EC 17 00 00");
 
-                    LPVOID memory = Memory::AllocateMemory(0x1000);
+                    LPVOID memory = Memory::AllocateMemory(MaxResources, 0x100);
                     Memory::CreateTrampoline(MaxResources, memory);
                     Memory::WriteAssemblyInstructions((uintptr_t)memory, MaxResources + 17, MaxResourcesByte, Memory::ArrayLength(MaxResourcesByte));
                     gData.MaxResources = !gData.MaxResources;
@@ -293,10 +293,10 @@ DWORD WINAPI Payload(LPVOID lpParam)
 }
 
 
-BOOL APIENTRY DllMain( HMODULE hModule,
-                       DWORD  ul_reason_for_call,
-                       LPVOID lpReserved
-                     )
+BOOL APIENTRY DllMain(HMODULE hModule,
+    DWORD  ul_reason_for_call,
+    LPVOID lpReserved
+)
 {
     switch (ul_reason_for_call)
     {
