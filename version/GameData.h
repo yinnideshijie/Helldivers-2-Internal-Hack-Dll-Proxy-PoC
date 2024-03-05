@@ -12,4 +12,12 @@ class GameData
 		bool	NoReload = false;
 		bool	MaxResources = false;
 		bool	Recoil = false;
+		bool	InfBackpack = false;
+		bool	InfSpecWeapon = false;
+		bool	NoCannonOverheat = false;
+		bool	NoStasTurretOverHeat = false;
+		bool	JetpackNoCD = false;
+		bool	ShieldNoCD = false;
+		bool	InstantRailGun = false;
+		bool	ShowAllMapIcons = false;
 };

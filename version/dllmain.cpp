@@ -19,6 +19,12 @@ void InitializeConsole() {
     freopen_s(&pFile, "CONOUT$", "w", stdout);
 }
 
+void DestroyConsole()
+{
+    DestroyWindow(GetConsoleWindow());
+    FreeConsole();
+}
+
 //Check Key Pressed
 bool keyPressed(int vKey)
 {
@@ -34,6 +40,9 @@ struct Checkbox {
 // Function to display checkboxes
 void displayCheckboxes(const std::vector<Checkbox>& checkboxes, size_t selectedCheckbox) {
     system("cls"); // Clear the console (Windows specific)
+
+    printf("[Init] - Helldiver 2 PoC DLL Proxy...\n");
+    printf("[Init] - Thanks to cfemen and gir489...\n");
 
     printf("[Ready] : Select some of the features below by pressing the [Space] key.\n");
     printf("[Ready] : Press [Enter] to run the feature you selected.\n");
@@ -58,22 +67,35 @@ DWORD WINAPI Payload(LPVOID lpParam)
     // Initialize the proxy for the DLL
     dllforward::setup();
 
-    //Show Console
-    InitializeConsole();
-
     //Console Menu
-    const int numCheckboxes = 10;
-    std::vector<Checkbox> checkboxes = { {"Inf Health", false}, {"Inf Granades", false}, {"Inf Ammo", false}, {"Inf Syringes", false}, {"Inf Stamina", false}, {"Inf Strategems", false}, {"Inf Mission Time", false}, {"No Reload", false}, {"Max Resources", false}, {"No Recoil", false} }; // Initialize all checkboxes to unchecked
+    std::vector<Checkbox> checkboxes = { 
+          {"Inf Health", false}
+        , {"Inf Granades", false}
+        , {"Inf Ammo", false}
+        , {"Inf Syringes", false}
+        , {"Inf Stamina", false}
+        , {"Inf Strategems", false}
+        , {"Inf Mission Time", false}
+        , {"No Reload", false}
+        , {"Max Resources", false}
+        , {"No Recoil", false}
+        , {"Inf Backpack", false}
+        , {"Inf Special Weapon", false}
+        , {"No Laser Cannon Overheat", false}
+        , {"Instant Railgun", false}
+        , {"Show All Map Icons", false}
+        , {"No Stationary Turret Overheat", false}
+        , {"No Backpack Shield Cooldown", false}
+        , {"No JetPack Cooldown", false}
+    
+    }; // Initialize all checkboxes to unchecked
+    const int numCheckboxes = checkboxes.size();
     size_t selectedCheckbox = 0;
     char userInput;
-
 
     HMODULE moduleHandle = nullptr;
     GameData gData;
 
-    printf("[Init] - PoC DLL Proxy...\n");
-    printf("[Init] - Thanks to cfemen and gir489...\n");
-    printf("[Init] - Waiting for helldivers 2 to fully open...\n");
     do
     {
         moduleHandle = GetModuleHandle(L"game.dll");
@@ -82,9 +104,9 @@ DWORD WINAPI Payload(LPVOID lpParam)
     Sleep(100);
 
 
-
-    printf("[Init] - Helldivers 2 Is Ready \n");
-
+    //Show Console
+    InitializeConsole();
+    
     do {
 
         displayCheckboxes(checkboxes, selectedCheckbox);
@@ -125,6 +147,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
     for (size_t i = 0; i < checkboxes.size(); ++i) {
         if (checkboxes[i].checked)
         {
+
             if (checkboxes[i].title == "Inf Health")
             {
                 if (!gData.InfHealth) // no need but its old code when activate using hotkey, but need to much hotkey for all feature
@@ -270,6 +293,30 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 }
             }
 
+            if (checkboxes[i].title == "Instant Railgun")
+            {
+                if (!gData.InstantRailGun)
+                {
+                    BYTE InstantRailGunByte[] =
+                    {
+                        0x43, 0xC7, 0x84, 0x3E, 0x2C, 0x2C, 0x00, 0x00, 0xFC, 0xFF, 0x3F, 0x40,
+                        0xF3, 0x43, 0x0F, 0x10, 0x84, 0x3E, 0x2C, 0x2C, 0x00, 0x00,
+                        0x84, 0xC9, 0x74, 0x02, 0xEB, 0x0E, 0x00, 0x00, 0xF4, 0x01, 0x00, 0x00,
+                        0x48, 0x8D, 0x82, 0x99, 0x00, 0x00, 0x00,
+                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x71, 0x36, 0x4C, 0x80, 0x01, 0x00, 0x00, 0x00,
+                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+                    };
+
+                    uintptr_t InstantRailGun = Memory::FindPattern("game.dll", "F3 43 0F 11 84 37 2C 2C 00 00");
+
+                    LPVOID memory = Memory::AllocateMemory(InstantRailGun, 0x100);
+                    Memory::CreateTrampoline(InstantRailGun, memory);
+                    Memory::WriteAssemblyInstructions((uintptr_t)memory, InstantRailGun + 14, InstantRailGunByte, Memory::ArrayLength(InstantRailGunByte));
+                    gData.InstantRailGun = !gData.InstantRailGun;
+                    printf("[Active] Instant Railgun\n");
+                }
+            }
+
             if (checkboxes[i].title == "No Recoil")
             {
                 if (!gData.Recoil)
@@ -285,10 +332,117 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     printf("[Active] No Recoil\n");
                 }
             }
+
+            if (checkboxes[i].title == "No Laser Cannon Overheat")
+            {
+                if (!gData.NoCannonOverheat)
+                {
+                    uintptr_t CannonOverheat = Memory::FindPattern("game.dll", "F3 0F 11 09 4C 8B C1 49");
+                    Memory::Nop((LPVOID)(CannonOverheat), 4);
+                    gData.NoCannonOverheat = !gData.NoCannonOverheat;
+                    printf("[Active] No Cannon Laser Overheat\n");
+                }
+            }
+
+            if (checkboxes[i].title == "Inf Special Weapon")
+            {
+                if (!gData.InfSpecWeapon)
+                {
+                    uintptr_t SpecWeapon = Memory::FindPattern("game.dll", "44 89 7F 08 41 80 BC 24");
+                    Memory::Nop((LPVOID)(SpecWeapon), 4);
+                    gData.InfSpecWeapon = !gData.InfSpecWeapon;
+                    printf("[Active] Infinite Special Weapon\n");
+                }
+            }
+
+            if (checkboxes[i].title == "No Stationary Turret Overheat")
+            {
+                if (!gData.NoStasTurretOverHeat)
+                {
+                    uintptr_t NoStasTurretOverHeat = Memory::FindPattern("game.dll", "F3 0F 11 84 30 ?? ?? 00 00 41 8B 47 ??");
+                    Memory::Nop((LPVOID)(NoStasTurretOverHeat), 9);
+                    gData.NoStasTurretOverHeat = !gData.NoStasTurretOverHeat;
+                    printf("[Active] No Stationary Turret Overheat\n");
+                }
+            }
+
+            if (checkboxes[i].title == "No JetPack Cooldown")
+            {
+                if (!gData.JetpackNoCD)
+                {
+                    uintptr_t JetpackNoCD = Memory::FindPattern("game.dll", "8B 08 89 8C BE ?? ?? 00 00");
+                    Memory::Nop((LPVOID)(JetpackNoCD + 2), 7);
+                    gData.JetpackNoCD = !gData.JetpackNoCD;
+                    printf("[Active] Jetpack No Cooldown\n");
+                }
+            }
+
+            if (checkboxes[i].title == "No Backpack Shield Cooldown")
+            {
+                if (!gData.ShieldNoCD)
+                {
+                    BYTE ShieldNoCDByte[] =
+                    {
+                        0xF3, 0x0F, 0x5C, 0xC9, 0x90
+                    };
+
+                    uintptr_t ShieldNoCD = Memory::FindPattern("game.dll", "F3 41 0F 5C CA F3 42");
+                    Memory::Patch((LPVOID)(ShieldNoCD), ShieldNoCDByte, 5);
+                    gData.ShieldNoCD = !gData.ShieldNoCD;
+                    printf("[Active] Backpack Shield No Cooldown\n");
+                }
+            }
+
+            if (checkboxes[i].title == "Inf Backpack")
+            {
+                if (!gData.InfBackpack)
+                {
+                    uintptr_t Backpack = Memory::FindPattern("game.dll", "2B C6 4D 8D 85 48 04 00 00");
+                    Memory::Nop((LPVOID)(Backpack), 2);
+                    gData.InfBackpack = !gData.InfBackpack;
+                    printf("[Active] Infinite Backpack\n");
+                }
+            }
+
+            if (checkboxes[i].title == "Show All Map Icons")
+            {
+                if (!gData.ShowAllMapIcons)
+                {
+                    BYTE ShowAllMapIconsByte[] =
+                    {
+                        0xB8, 0x01, 0x00, 0x00, 0x00, 0x90
+                    };
+
+                    BYTE ShowAllMapIconsByte2n4[] =
+                    {
+                        0x90, 0xE9
+                    };
+
+                    BYTE ShowAllMapIconsByte3[] =
+                    {
+                        0xEB, 0x09
+                    };
+
+                    uintptr_t ShowAllMapIconsAddr = Memory::FindPattern("game.dll", "41 0F B6 44 97 23");
+                    uintptr_t aob_CheckIfAlienHivesAreObstructed = Memory::FindPattern("game.dll", "41 80 BE 3C BA 07 00 00");
+                    uintptr_t aob_CheckIfMinorInterestBlipIsDiscovered = Memory::FindPattern("game.dll", "0F 85 83 01 00 00 41 80");
+                    uintptr_t aob_GetMinorInterestBlipIcon = Memory::FindPattern("game.dll", "0F 84 A5 00 00 00 41 80");
+                    uintptr_t aob_CheckMissionBlip = Memory::FindPattern("game.dll", "0F 85 59 02 00 00 49 8D");
+                     
+                    Memory::Patch((LPVOID)(ShowAllMapIconsAddr), ShowAllMapIconsByte, 6);
+                    Memory::Nop((LPVOID)(aob_CheckIfAlienHivesAreObstructed), 7);
+                    Memory::Patch((LPVOID)(aob_CheckIfMinorInterestBlipIsDiscovered), ShowAllMapIconsByte2n4, 2);
+                    Memory::Patch((LPVOID)(aob_GetMinorInterestBlipIcon), ShowAllMapIconsByte3, 2);
+                    Memory::Patch((LPVOID)(aob_CheckMissionBlip), ShowAllMapIconsByte2n4, 2);
+                    gData.ShowAllMapIcons = !gData.ShowAllMapIcons;
+                    printf("[Active] Show All Map Icons\n");
+                }
+            }
         }
     }
     printf("[Exit] Unload\n");
-    FreeLibraryAndExitThread(static_cast<HMODULE>(lpParam), 0);
+    FreeConsole();
+    FreeLibraryAndExitThread(GetModuleHandle(NULL), 0);
     return 0;
 }
 
@@ -302,13 +456,16 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     {
     case DLL_PROCESS_ATTACH:
     {
+        DisableThreadLibraryCalls(hModule);
         hMainThread = CreateThread(NULL, 0, Payload, hModule, 0, NULL);
         if (hMainThread)
             CloseHandle(hMainThread);
-    }
+    }break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
+        FreeConsole();
+        FreeLibraryAndExitThread(hModule, 0);
         break;
     }
     return TRUE;
