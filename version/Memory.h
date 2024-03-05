@@ -7,7 +7,7 @@
 
 namespace Memory
 {
-	DWORD FindPattern(const char* moduleName, const char* pattern) {
+	uintptr_t FindPattern(const char* moduleName, const char* pattern) {
 		// Get the base address of the module
 		HMODULE moduleHandle = GetModuleHandleA(moduleName);
 		if (!moduleHandle) {
@@ -43,7 +43,7 @@ namespace Memory
 
 			if (found) {
 				//std::cout << "Pattern found at offset: 0x" << std::hex << i << std::dec << std::endl;
-				return moduleBase + i;
+				return (uintptr_t)moduleBase + i;
 			}
 		}
 
@@ -67,7 +67,7 @@ namespace Memory
 		VirtualProtect(dst, size, oldprotect, &oldprotect);
 	}
 
-	LPVOID AllocateMemory(size_t size)
+	LPVOID AllocateMemory(uintptr_t targetAddress, size_t size)
 	{
 		// Allocate memory near the calculated base address
 		return VirtualAlloc(nullptr, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
