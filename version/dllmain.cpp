@@ -76,6 +76,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
         , {"Inf Stamina", false}
         , {"Inf Strategems", false}
         , {"Inf Mission Time", false}
+        //, {"One / Two Hit Kill ( Bile Titan Bug, Aim Only Head )", false}
         , {"No Reload", false}
         , {"Max Resources", false}
         , {"No Recoil", false}
@@ -154,6 +155,23 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 {
                     BYTE InfHealthByte[] =
                     {
+                        0x41, 0x51,
+                        0x49, 0xB9, 0xE8, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x4D, 0x39, 0x48, 0x18, 
+                        0x7C, 0x03,
+                        0x45, 0x89, 0x38,
+                        0x49, 0x8B, 0x84, 0xDE, 0x28, 0x04, 0x00, 0x00,
+                        0x8B, 0x48, 0x10,
+                        0x41, 0x59,
+                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00,  // JMP [rip+6]
+                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // Placeholder for the target address
+                    };
+
+                    BYTE InfHealthByte1[] =
+                    {
+                        0xB8, 0xE8, 0x03, 0x00, 0x00,
+                        0x41, 0x39, 0x84, 0x8B, 0x40, 0x4C, 0x00, 0x00,
+                        0x7F, 0x0D,
                         0xB8, 0x0F, 0x27, 0x00, 0x00,
                         0x41, 0x89, 0x84, 0x8B, 0x28, 0x4C, 0x00, 0x00,
                         0x48, 0x8B, 0x5C, 0x24, 0x20,
@@ -162,10 +180,16 @@ DWORD WINAPI Payload(LPVOID lpParam)
                         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // Placeholder for the target address
                     };
 
-                    uintptr_t InfHealth = Memory::FindPattern("game.dll", "41 8B 84 8B 28 4C 00 00 48 8B 5C 24 20 48 8B 74 24 28");
+                    uintptr_t InfHealth = Memory::FindPattern("game.dll", "45 89 38 49 8B 84 DE 28 04 00 00");
                     LPVOID memory = Memory::AllocateMemory(InfHealth, 0x100);
                     Memory::CreateTrampoline(InfHealth, memory);
-                    Memory::WriteAssemblyInstructions((uintptr_t)memory, InfHealth + 18, InfHealthByte, Memory::ArrayLength(InfHealthByte));
+                    Memory::WriteAssemblyInstructions((uintptr_t)memory, InfHealth + 14, InfHealthByte, Memory::ArrayLength(InfHealthByte));
+
+                    uintptr_t InfHealth1 = Memory::FindPattern("game.dll", "41 8B 84 8B 28 4C 00 00 48 8B 5C 24 20 48 8B 74 24 28");
+                    memory = Memory::AllocateMemory(InfHealth1, 0x100);
+                    Memory::CreateTrampoline(InfHealth1, memory);
+                    Memory::WriteAssemblyInstructions((uintptr_t)memory, InfHealth1 + 18, InfHealthByte1, Memory::ArrayLength(InfHealthByte1));
+
                     gData.InfHealth = !gData.InfHealth;
                     //create trampolin
                     printf("[Active] Infinite Health\n");
@@ -301,8 +325,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     {
                         0x43, 0xC7, 0x84, 0x3E, 0x2C, 0x2C, 0x00, 0x00, 0xFC, 0xFF, 0x3F, 0x40,
                         0xF3, 0x43, 0x0F, 0x10, 0x84, 0x3E, 0x2C, 0x2C, 0x00, 0x00,
-                        0x84, 0xC9, 0x74, 0x02, 0xEB, 0x0E, 0x00, 0x00, 0xF4, 0x01, 0x00, 0x00,
-                        0x48, 0x8D, 0x82, 0x99, 0x00, 0x00, 0x00,
+                        0x84, 0xC9, 0x74, 0x02, 0xEB, 0x0E,
                         0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x71, 0x36, 0x4C, 0x80, 0x01, 0x00, 0x00, 0x00,
                         0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                     };
@@ -413,6 +436,11 @@ DWORD WINAPI Payload(LPVOID lpParam)
                         0xB8, 0x01, 0x00, 0x00, 0x00, 0x90
                     };
 
+                    BYTE ShowAllMapIconsByte1[] =
+                    {
+                        0xF8
+                    };
+
                     BYTE ShowAllMapIconsByte2n4[] =
                     {
                         0x90, 0xE9
@@ -430,7 +458,8 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     uintptr_t aob_CheckMissionBlip = Memory::FindPattern("game.dll", "0F 85 59 02 00 00 49 8D");
                      
                     Memory::Patch((LPVOID)(ShowAllMapIconsAddr), ShowAllMapIconsByte, 6);
-                    Memory::Nop((LPVOID)(aob_CheckIfAlienHivesAreObstructed), 7);
+                    Memory::Patch((LPVOID)(aob_CheckIfAlienHivesAreObstructed), ShowAllMapIconsByte1, 1);
+                    Memory::Nop((LPVOID)(aob_CheckIfAlienHivesAreObstructed+1), 7);
                     Memory::Patch((LPVOID)(aob_CheckIfMinorInterestBlipIsDiscovered), ShowAllMapIconsByte2n4, 2);
                     Memory::Patch((LPVOID)(aob_GetMinorInterestBlipIcon), ShowAllMapIconsByte3, 2);
                     Memory::Patch((LPVOID)(aob_CheckMissionBlip), ShowAllMapIconsByte2n4, 2);
@@ -438,6 +467,33 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     printf("[Active] Show All Map Icons\n");
                 }
             }
+
+            /*if (checkboxes[i].title == "One / Two Hit Kill ( Bile Titan Bug, Aim Only Head )")
+            {
+                if (!gData.OHK)
+                {
+                    BYTE OHKByte[] =
+                    {
+                        0x83, 0xBF, 0x38, 0x0B, 0x00, 0x00, 0x0A,
+                        0x0F, 0x85, 0x05, 0x00, 0x00, 0x00,
+                        0xE9, 0x18, 0x00, 0x00, 0x00,
+                        0xC7, 0x87, 0x44, 0x64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x66, 0x4A, 0x6B, 0x80, 0x01, 0x00, 0x00, 0x00,
+                        0x89, 0x87, 0x44, 0x64, 0x00, 0x00,
+                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+                    };
+
+                    uintptr_t OHK = Memory::FindPattern("game.dll", "89 87 44 64 00 00");
+                    LPVOID memory = Memory::AllocateMemory(OHK, 0x100);
+                    Memory::CreateTrampoline(OHK, memory);
+                    Memory::WriteAssemblyInstructions((uintptr_t)memory, OHK + 15, OHKByte, Memory::ArrayLength(OHKByte));
+                    gData.OHK = !gData.OHK;
+                    printf("[Active] Instant Railgun\n");
+                }
+            }*/
+            
+
+
         }
     }
     printf("[Exit] Unload\n");
