@@ -71,14 +71,18 @@ DWORD WINAPI Payload(LPVOID lpParam)
     std::vector<Checkbox> checkboxes = { 
           {"Inf Health", false}
         , {"Inf Granades", false}
+        , {"Inf Granades(Legit)", false}
         , {"Inf Ammo", false}
+        , {"Inf Ammo(Legit)", false}
         , {"Inf Syringes", false}
+        , {"Inf Syringes(Legit)", false}
         , {"Inf Stamina", false}
         , {"Inf Strategems", false}
         , {"Inf Mission Time", false}
         //, {"One / Two Hit Kill ( Bile Titan Bug, Aim Only Head )", false}
         , {"No Reload", false}
         , {"Max Resources", false}
+        , {"Add 5 Samples", false}
         , {"No Recoil", false}
         , {"Inf Backpack", false}
         , {"Inf Special Weapon", false}
@@ -207,6 +211,28 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 }
             }
 
+            if (checkboxes[i].title == "Inf Granades(Legit)")
+            {
+                if (!gData.InfGrenadesLegit && !gData.InfGrenades)
+                {
+                    uintptr_t GrenadesAddress = Memory::FindPattern("game.dll", "4D 03 C6 41 FF 08");
+                    BYTE GrenadeBytes[] =
+                    {
+                        0x4D, 0x01, 0xF0,                               //add r8,r14
+                        0x41, 0x83, 0x38, 0x01,                         //cmp dword ptr [r8],01
+                        0x74, 0x03,                                     //je short @f
+                        0x41, 0xFF, 0x08,                               // dec [r8]
+                        0x4A, 0x8B, 0x84, 0xED, 0x30, 0x20, 0x00, 0x00, // mov rax,[rbp+r13*8+00002030]
+                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //JMP return_Grenades
+                    };
+                    LPVOID memory = Memory::AllocateMemory(GrenadesAddress, sizeof(GrenadeBytes));
+                    Memory::CreateTrampoline(GrenadesAddress, memory);
+                    Memory::WriteAssemblyInstructions((uintptr_t)memory, GrenadesAddress + 14, GrenadeBytes, Memory::ArrayLength(GrenadeBytes));
+                    gData.InfGrenadesLegit = !gData.InfGrenadesLegit;
+                    printf("[Active] Infinite Grenades(Legit)\n");
+                }
+            }
+
             if (checkboxes[i].title == "Inf Ammo")
             {
                 if (!gData.InfAmmo)
@@ -219,6 +245,28 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 }
             }
 
+            if (checkboxes[i].title == "Inf Ammo(Legit)")
+            {
+                if (!gData.InfAmmoLegit && !gData.InfAmmo)
+                {
+                    uintptr_t AmmoAddress = Memory::FindPattern("game.dll", "41 83 2C C2 01");
+                    BYTE AmmoBytes[] =
+                    {
+                        0x41, 0x83, 0x3C, 0xC2, 0x02,                    // cmp dword ptr [r10+rax*8],#2
+                        0x7E, 0x05,                                      // jle short @f
+                        0x41, 0x83, 0x2C, 0xC2, 0x01,                    // sub dword ptr [r10+rax*8],01
+                        0x4D, 0x8D, 0x04, 0xC2,			                 // lea r8,[r10+rax*8]
+                        0x49, 0x8B, 0x84, 0xCA, 0x28, 0x20, 0x00, 0x00,  // mov rax,[r10+rcx*8+00002028]
+                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //JMP return_SubtractAmmo
+                    };
+                    LPVOID memory = Memory::AllocateMemory(AmmoAddress, sizeof(AmmoBytes));
+                    Memory::CreateTrampoline(AmmoAddress, memory);
+                    Memory::WriteAssemblyInstructions((uintptr_t)memory, AmmoAddress + 17, AmmoBytes, Memory::ArrayLength(AmmoBytes));
+                    gData.InfAmmoLegit = !gData.InfAmmoLegit;
+                    printf("[Active] Infinite Ammo(Legit)\n");
+                }
+            }
+
             if (checkboxes[i].title == "Inf Syringes")
             {
                 if (!gData.InfSyringes)
@@ -227,6 +275,29 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     Memory::Nop((LPVOID)(Syringes), 3);
                     gData.InfSyringes = !gData.InfSyringes;
                     printf("[Active] Infinite Syringes\n");
+                }
+            }
+
+            if (checkboxes[i].title == "Inf Syringes(Legit)")
+            {
+                if (!gData.InfSyringesLegit && !gData.InfSyringes)
+                {
+                    uintptr_t SyringesAddress = Memory::FindPattern("game.dll", "48 03 C9 45 8B BC CA C8 75 00 00");
+                    BYTE SyringesBytes[] =
+                    {
+                        0x48, 0x01, 0xC9,                                     // add rcx,rcx
+                        0x45, 0x8B, 0xBC, 0xCA, 0xC8, 0x75, 0x00, 0x00,       // mov r15d,[r10+rcx*8+000075C8]
+                        0x41, 0x83, 0xBC, 0xCA, 0xC8, 0x75, 0x00, 0x00, 0x01, // cmp dword ptr [r10+rcx*8+000075C8],01 { 1 }
+                        0x74, 0x03,                                           // je short @f
+                        0x41, 0xFF, 0xCF,                                     // dec r15d
+                        0x39, 0xD0,                                           // cmp eax,edx
+                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //JMP return_Syringes
+                    };
+                    LPVOID memory = Memory::AllocateMemory(SyringesAddress, sizeof(SyringesBytes));
+                    Memory::CreateTrampoline(SyringesAddress, memory);
+                    Memory::WriteAssemblyInstructions((uintptr_t)memory, SyringesAddress + 14, SyringesBytes, Memory::ArrayLength(SyringesBytes));
+                    gData.InfSyringesLegit = !gData.InfSyringesLegit;
+                    printf("[Active] Infinite Syringes(Legit)\n");
                 }
             }
 
@@ -309,6 +380,26 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     Memory::WriteAssemblyInstructions((uintptr_t)memory, MaxResources + 17, MaxResourcesByte, Memory::ArrayLength(MaxResourcesByte));
                     gData.MaxResources = !gData.MaxResources;
                     printf("[Active] x500 Samples\n");
+                }
+            }
+
+            if (checkboxes[i].title == "Add 5 Samples")
+            {
+                if (!gData.Add5Resources && !gData.MaxResources)
+                {
+                    uintptr_t ResourcesAddress = Memory::FindPattern("game.dll", "45 01 B4 8A EC 17 00 00");
+                    BYTE ResourcesBytes[] =
+                    {
+                        0x41, 0xBE, 0x05, 0x00, 0x00, 0x00,              // mov r14d, #5
+                        0x45, 0x01, 0xB4, 0x8A, 0xEC, 0x17, 0x00, 0x00,  // add [r10+rcx*4+000017EC],r14d
+                        0x48, 0x8D, 0x82, 0x99, 0x00, 0x00, 0x00,        // lea rax,[rdx+00000099]
+                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //JMP return_Add5Resources
+                    };
+                    LPVOID memory = Memory::AllocateMemory(ResourcesAddress, sizeof(ResourcesBytes));
+                    Memory::CreateTrampoline(ResourcesAddress, memory);
+                    Memory::WriteAssemblyInstructions((uintptr_t)memory, ResourcesAddress + 15, ResourcesBytes, Memory::ArrayLength(ResourcesBytes));
+                    gData.Add5Resources = !gData.Add5Resources;
+                    printf("[Active] Add 5 Samples\n");
                 }
             }
 
