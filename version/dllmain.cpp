@@ -234,7 +234,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
             {
                 if (!gData.InfStamina)
                 {
-                    uintptr_t Stamina = Memory::FindPattern("game.dll", "F3 41 0F 11 08 8B 48 10 E8 ? ? ? ? 41 8B 47 48");
+                    uintptr_t Stamina = Memory::FindPattern("game.dll", "F3 41 0F 11 08 8B 48 10 E8 ?? ?? ?? ?? 41 8B 47 48");
                     BYTE StaminaPatch[] = { 0xF3, 0x41, 0x0F, 0x11, 0x30 };
                     Memory::Patch((LPVOID)(Stamina), StaminaPatch, 5);
                     gData.InfStamina = !gData.InfStamina;
@@ -344,7 +344,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                         0xEB
                     };
 
-                    uintptr_t Recoil = Memory::FindPattern("game.dll", "44 8B 7C 24 ? 41 3B 46 08 ");
+                    uintptr_t Recoil = Memory::FindPattern("game.dll", "44 8B 7C 24 ?? 41 3B 46 08 ");
                     Memory::Patch((LPVOID)(Recoil+9), RecoilByte, 1);
                     gData.Recoil = !gData.Recoil;
                     printf("[Active] No Recoil\n");
@@ -377,7 +377,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
             {
                 if (!gData.NoStasTurretOverHeat)
                 {
-                    uintptr_t NoStasTurretOverHeat = Memory::FindPattern("game.dll", "F3 0F 11 84 30 ?? ?? 00 00 41 8B 47 ??");
+                    uintptr_t NoStasTurretOverHeat = Memory::FindPattern("game.dll", "F3 42 0F 11 84 32 ?? ?? ?? ?? 8B 55 38 43 89 94 35");
                     Memory::Nop((LPVOID)(NoStasTurretOverHeat), 9);
                     gData.NoStasTurretOverHeat = !gData.NoStasTurretOverHeat;
                     printf("[Active] No Stationary Turret Overheat\n");
@@ -404,7 +404,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                         0xF3, 0x0F, 0x5C, 0xC9, 0x90
                     };
 
-                    uintptr_t ShieldNoCD = Memory::FindPattern("game.dll", "F3 41 0F 5C CA F3 42");
+                    uintptr_t ShieldNoCD = Memory::FindPattern("game.dll", "F3 41 0F 5C CA F3 0F 11 8C EE");
                     Memory::Patch((LPVOID)(ShieldNoCD), ShieldNoCDByte, 5);
                     gData.ShieldNoCD = !gData.ShieldNoCD;
                     printf("[Active] Backpack Shield No Cooldown\n");
@@ -448,8 +448,8 @@ DWORD WINAPI Payload(LPVOID lpParam)
 
                     uintptr_t ShowAllMapIconsAddr = Memory::FindPattern("game.dll", "41 0F B6 44 97 23");
                     uintptr_t aob_CheckIfAlienHivesAreObstructed = Memory::FindPattern("game.dll", "41 80 BE 3C BA 07 00 00");
-                    uintptr_t aob_CheckIfMinorInterestBlipIsDiscovered = Memory::FindPattern("game.dll", "0F 85 ? ? ? ? 41 80 7D ? ? 0F 84 ? ? ? ? F3 0F 5C 7D");
-                    uintptr_t aob_GetMinorInterestBlipIcon = Memory::FindPattern("game.dll", "0F 84 ? ? ? ? 48 8B 4C 24 ? F3 41 0F 10 4F");
+                    uintptr_t aob_CheckIfMinorInterestBlipIsDiscovered = Memory::FindPattern("game.dll", "0F 85 ?? ?? ?? ?? 48 8B 44 24 ?? 80 78 29 00");
+                    uintptr_t aob_GetMinorInterestBlipIcon = Memory::FindPattern("game.dll", "0F 84 ?? ?? ?? ?? 48 8B 4C 24 ?? F3 41 0F 10 4F");
                     uintptr_t aob_CheckMissionBlip = Memory::FindPattern("game.dll", "0F 85 59 02 00 00 49 8D");
                      
                     Memory::Patch((LPVOID)(ShowAllMapIconsAddr), ShowAllMapIconsByte, 6);
