@@ -247,8 +247,8 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 if (!gData.InfStrategems)
                 {
                     uintptr_t Strategems = Memory::FindPattern("game.dll", "0F 86 BF 01 00 00 0F");
-                    BYTE StrategemsPatch1[] = { 0x8D, 0x01, 0x90 };
-                    Memory::Patch((LPVOID)(Strategems), StrategemsPatch1, 3);
+                    BYTE StrategemsPatch1[] = { 0x90, 0xE9 };
+                    Memory::Patch((LPVOID)(Strategems), StrategemsPatch1, 2);
                     gData.InfStrategems = !gData.InfStrategems;
                     printf("[Active] Infinite Strategems\n");
                 }
