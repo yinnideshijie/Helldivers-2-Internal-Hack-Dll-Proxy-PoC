@@ -5,16 +5,30 @@
 ### Thanks to cfemen and gir489 for all information and CE Tables.
 
 ## Feature is :
-### - Inf Health
-### - Inf Granades
-### - Inf Ammo
-### - Inf Syringes
-### - Inf Stamina
-### - Inf Strategems
-### - Inf Mission Time
-### - No Reload
-### - Max Resources
-### - No Recoil
+```c
+//Console Menu
+std::vector<Checkbox> checkboxes = { 
+      {"Inf Health", false}
+    , {"Inf Granades", false}
+    , {"Inf Ammo", false}
+    , {"Inf Syringes", false}
+    , {"Inf Stamina", false}
+    , {"Inf Strategems", false}
+    , {"Inf Mission Time", false}
+    , {"No Reload", false}
+    , {"Max Resources", false}
+    , {"No Recoil", false}
+    , {"Inf Backpack", false}
+    , {"Inf Special Weapon", false}
+    , {"No Laser Cannon Overheat", false}
+    , {"Instant Railgun", false}
+    , {"Show All Map Icons", false}
+    , {"No Stationary Turret Overheat", false}
+    , {"No Backpack Shield Cooldown", false}
+    , {"No JetPack Cooldown", false}
+
+};
+```
 
 ## How to use :
 ### - Download DLL
