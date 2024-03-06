@@ -76,7 +76,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
         , {"Inf Stamina", false}
         , {"Inf Strategems", false}
         , {"Inf Mission Time", false}
-        , {"One / Two Hit Kill ( Bile Titan Bug, Aim Only Head )", false}
+        //, {"One / Two Hit Kill ( Bile Titan Bug, Aim Only Head )", false}
         , {"No Reload", false}
         , {"Max Resources", false}
         , {"No Recoil", false}
@@ -234,9 +234,9 @@ DWORD WINAPI Payload(LPVOID lpParam)
             {
                 if (!gData.InfStamina)
                 {
-                    uintptr_t Stamina = Memory::FindPattern("game.dll", "F3 0F 5F C8 F3 41 0F 11 08");
-                    BYTE StaminaPatch[] = { 0x0F, 0x1F, 0x44, 0x00, 0x00 };
-                    Memory::Patch((LPVOID)(Stamina+4), StaminaPatch, 5);
+                    uintptr_t Stamina = Memory::FindPattern("game.dll", "F3 41 0F 11 08 8B 48 10 E8 F1");
+                    BYTE StaminaPatch[] = { 0xF3, 0x41, 0x0F, 0x11, 0x30 };
+                    Memory::Patch((LPVOID)(Stamina), StaminaPatch, 5);
                     gData.InfStamina = !gData.InfStamina;
                     printf("[Active] Infinite Stamina\n");
                 }
@@ -349,7 +349,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                         0xEB
                     };
 
-                    uintptr_t Recoil = Memory::FindPattern("game.dll", "75 72 45 8B C7");
+                    uintptr_t Recoil = Memory::FindPattern("game.dll", "75 24 45 8B C7");
                     Memory::Patch((LPVOID)(Recoil), RecoilByte, 1);
                     gData.Recoil = !gData.Recoil;
                     printf("[Active] No Recoil\n");
@@ -409,7 +409,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                         0xF3, 0x0F, 0x5C, 0xC9, 0x90
                     };
 
-                    uintptr_t ShieldNoCD = Memory::FindPattern("game.dll", "F3 41 0F 5C CA F3 0F 11 8C");
+                    uintptr_t ShieldNoCD = Memory::FindPattern("game.dll", "F3 41 0F 5C CA F3 42");
                     Memory::Patch((LPVOID)(ShieldNoCD), ShieldNoCDByte, 5);
                     gData.ShieldNoCD = !gData.ShieldNoCD;
                     printf("[Active] Backpack Shield No Cooldown\n");
@@ -451,15 +451,10 @@ DWORD WINAPI Payload(LPVOID lpParam)
                         0xEB, 0x09
                     };
 
-                    BYTE ShowAllMapIconsByte4[] =
-                    {
-                        0xEB
-                    };
-
                     uintptr_t ShowAllMapIconsAddr = Memory::FindPattern("game.dll", "41 0F B6 44 97 23");
                     uintptr_t aob_CheckIfAlienHivesAreObstructed = Memory::FindPattern("game.dll", "41 80 BE 3C BA 07 00 00");
-                    uintptr_t aob_CheckIfMinorInterestBlipIsDiscovered = Memory::FindPattern("game.dll", "0F 85 66 01 00 00 48 8B 44 ?? 58");
-                    uintptr_t aob_GetMinorInterestBlipIcon = Memory::FindPattern("game.dll", "0F 84 A9 00 00 00 48 8B 4C ?? 58");
+                    uintptr_t aob_CheckIfMinorInterestBlipIsDiscovered = Memory::FindPattern("game.dll", "0F 85 83 01 00 00 41 80");
+                    uintptr_t aob_GetMinorInterestBlipIcon = Memory::FindPattern("game.dll", "0F 84 A5 00 00 00 41 80");
                     uintptr_t aob_CheckMissionBlip = Memory::FindPattern("game.dll", "0F 85 59 02 00 00 49 8D");
                      
                     Memory::Patch((LPVOID)(ShowAllMapIconsAddr), ShowAllMapIconsByte, 6);
@@ -467,49 +462,35 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     Memory::Nop((LPVOID)(aob_CheckIfAlienHivesAreObstructed+1), 7);
                     Memory::Patch((LPVOID)(aob_CheckIfMinorInterestBlipIsDiscovered), ShowAllMapIconsByte2n4, 2);
                     Memory::Patch((LPVOID)(aob_GetMinorInterestBlipIcon), ShowAllMapIconsByte3, 2);
-                    Memory::Nop((LPVOID)(aob_GetMinorInterestBlipIcon + 23), 4);
-                    Memory::Patch((LPVOID)(aob_GetMinorInterestBlipIcon + 27), ShowAllMapIconsByte4, 1);
                     Memory::Patch((LPVOID)(aob_CheckMissionBlip), ShowAllMapIconsByte2n4, 2);
                     gData.ShowAllMapIcons = !gData.ShowAllMapIcons;
                     printf("[Active] Show All Map Icons\n");
                 }
             }
 
-            if (checkboxes[i].title == "One / Two Hit Kill ( Bile Titan Bug, Aim Only Head )")
+            /*if (checkboxes[i].title == "One / Two Hit Kill ( Bile Titan Bug, Aim Only Head )")
             {
                 if (!gData.OHK)
                 {
-                    BYTE OHKByte[] = {
+                    BYTE OHKByte[] =
+                    {
                         0x83, 0xBF, 0x38, 0x0B, 0x00, 0x00, 0x0A,
-                        0x0F, 0x85, 0x1D, 0x00, 0x00, 0x00,
-                        0xF3, 0x0F, 0x11, 0x05, 0xEB, 0x0F, 0x00, 0x00,
-                        0x81, 0x3D, 0xE1, 0x0F, 0x00, 0x00, 0x00, 0x00, 0xFA, 0x42,
-                        0x0F, 0x87, 0x05, 0x00, 0x00, 0x00,
-                        0xE9, 0x30, 0x00, 0x00, 0x00,
+                        0x0F, 0x85, 0x05, 0x00, 0x00, 0x00,
+                        0xE9, 0x18, 0x00, 0x00, 0x00,
                         0xC7, 0x87, 0x44, 0x64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                        0x0F, 0xB6, 0x45, 0x80,
-                        0x84, 0xC0,
-                        0x74, 0x02,
-                        0xEB, 0x0E,
-                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x6B, 0x4A, 0x6B, 0x80, 0x01, 0x00, 0x00, 0x00,
-                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x65, 0x4A, 0x6B, 0x80, 0x01, 0x00, 0x00, 0x00,
+                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x66, 0x4A, 0x6B, 0x80, 0x01, 0x00, 0x00, 0x00,
                         0x89, 0x87, 0x44, 0x64, 0x00, 0x00,
-                        0x0F, 0xB6, 0x45, 0x80,
-                        0x84, 0xC0,
-                        0x74, 0x02,
-                        0xEB, 0x0E,
-                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x6B, 0x4A, 0x6B, 0x80, 0x01, 0x00, 0x00, 0x00,
-                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x65, 0x4A, 0x6B, 0x80, 0x01, 0x00, 0x00, 0x00
+                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                     };
 
                     uintptr_t OHK = Memory::FindPattern("game.dll", "89 87 44 64 00 00");
                     LPVOID memory = Memory::AllocateMemory(OHK, 0x100);
                     Memory::CreateTrampoline(OHK, memory);
-                    Memory::WriteAssemblyInstructions((uintptr_t)memory, OHK + 14, OHKByte, Memory::ArrayLength(OHKByte));
+                    Memory::WriteAssemblyInstructions((uintptr_t)memory, OHK + 15, OHKByte, Memory::ArrayLength(OHKByte));
                     gData.OHK = !gData.OHK;
-                    printf("[Active] One / Two Hit Kill\n");
+                    printf("[Active] Instant Railgun\n");
                 }
-            }
+            }*/
             
 
 
