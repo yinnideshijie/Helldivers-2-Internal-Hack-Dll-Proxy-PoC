@@ -234,7 +234,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
             {
                 if (!gData.InfStamina)
                 {
-                    uintptr_t Stamina = Memory::FindPattern("game.dll", "F3 41 0F 11 08 8B 48 10 E8 F1");
+                    uintptr_t Stamina = Memory::FindPattern("game.dll", "F3 41 0F 11 08 8B 48 10 E8 ? ? ? ? 41 8B 47 48");
                     BYTE StaminaPatch[] = { 0xF3, 0x41, 0x0F, 0x11, 0x30 };
                     Memory::Patch((LPVOID)(Stamina), StaminaPatch, 5);
                     gData.InfStamina = !gData.InfStamina;
@@ -246,14 +246,9 @@ DWORD WINAPI Payload(LPVOID lpParam)
             {
                 if (!gData.InfStrategems)
                 {
-                    uintptr_t Strategems = Memory::FindPattern("game.dll", "C0 F3 48 0F 2C C8 48 03 48 18 48 89 8C 37 40 02 00 00");
-                    uintptr_t Strategems2 = Memory::FindPattern("game.dll", "0F 86 BF 01 00 00 0F");
-                    BYTE StrategemsPatch1[] = { 0x8D, 0x01, 0x90 };
-                    BYTE StrategemsPatch2[] = { 0x90, 0xE9 };
-                    Memory::Nop((LPVOID)(Strategems + 6), 4);
-                    Memory::Patch((LPVOID)(Strategems + 25), StrategemsPatch1, 3);
-                    Memory::Patch((LPVOID)(Strategems + 33), StrategemsPatch1, 3);
-                    Memory::Patch((LPVOID)(Strategems2), StrategemsPatch2, 2);
+                    uintptr_t Strategems = Memory::FindPattern("game.dll", "0F 86 BF 01 00 00 0F");
+                    BYTE StrategemsPatch1[] = { 0x90, 0xE9 };
+                    Memory::Patch((LPVOID)(Strategems), StrategemsPatch1, 2);
                     gData.InfStrategems = !gData.InfStrategems;
                     printf("[Active] Infinite Strategems\n");
                 }
@@ -349,8 +344,8 @@ DWORD WINAPI Payload(LPVOID lpParam)
                         0xEB
                     };
 
-                    uintptr_t Recoil = Memory::FindPattern("game.dll", "75 24 45 8B C7");
-                    Memory::Patch((LPVOID)(Recoil), RecoilByte, 1);
+                    uintptr_t Recoil = Memory::FindPattern("game.dll", "44 8B 7C 24 ? 41 3B 46 08 ");
+                    Memory::Patch((LPVOID)(Recoil+9), RecoilByte, 1);
                     gData.Recoil = !gData.Recoil;
                     printf("[Active] No Recoil\n");
                 }
@@ -453,8 +448,8 @@ DWORD WINAPI Payload(LPVOID lpParam)
 
                     uintptr_t ShowAllMapIconsAddr = Memory::FindPattern("game.dll", "41 0F B6 44 97 23");
                     uintptr_t aob_CheckIfAlienHivesAreObstructed = Memory::FindPattern("game.dll", "41 80 BE 3C BA 07 00 00");
-                    uintptr_t aob_CheckIfMinorInterestBlipIsDiscovered = Memory::FindPattern("game.dll", "0F 85 83 01 00 00 41 80");
-                    uintptr_t aob_GetMinorInterestBlipIcon = Memory::FindPattern("game.dll", "0F 84 A5 00 00 00 41 80");
+                    uintptr_t aob_CheckIfMinorInterestBlipIsDiscovered = Memory::FindPattern("game.dll", "0F 85 ? ? ? ? 41 80 7D ? ? 0F 84 ? ? ? ? F3 0F 5C 7D");
+                    uintptr_t aob_GetMinorInterestBlipIcon = Memory::FindPattern("game.dll", "0F 84 ? ? ? ? 48 8B 4C 24 ? F3 41 0F 10 4F");
                     uintptr_t aob_CheckMissionBlip = Memory::FindPattern("game.dll", "0F 85 59 02 00 00 49 8D");
                      
                     Memory::Patch((LPVOID)(ShowAllMapIconsAddr), ShowAllMapIconsByte, 6);
