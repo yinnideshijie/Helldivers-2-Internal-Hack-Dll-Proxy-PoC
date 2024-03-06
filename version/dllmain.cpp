@@ -378,7 +378,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 if (!gData.NoStasTurretOverHeat)
                 {
                     uintptr_t NoStasTurretOverHeat = Memory::FindPattern("game.dll", "F3 42 0F 11 84 32 ?? ?? ?? ?? 8B 55 38 43 89 94 35");
-                    Memory::Nop((LPVOID)(NoStasTurretOverHeat), 9);
+                    Memory::Nop((LPVOID)(NoStasTurretOverHeat), 10);
                     gData.NoStasTurretOverHeat = !gData.NoStasTurretOverHeat;
                     printf("[Active] No Stationary Turret Overheat\n");
                 }
@@ -443,7 +443,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
 
                     BYTE ShowAllMapIconsByte3[] =
                     {
-                        0xEB, 0x09
+                        0xEB, 0x04
                     };
 
                     uintptr_t ShowAllMapIconsAddr = Memory::FindPattern("game.dll", "41 0F B6 44 97 23");
