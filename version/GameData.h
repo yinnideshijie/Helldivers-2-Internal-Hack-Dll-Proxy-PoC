@@ -8,7 +8,7 @@ class GameData
 		bool	InfGrenadesLegit = false;
 		bool	InfSyringes = false;
 		bool	InfSyringesLegit = false;
-		bool	InfStrategems = false;
+		bool	InfStratagems = false;
 		bool	InfMissionTime = false;
 		bool	InfStamina = false;
 		bool	InfHealth = false;
