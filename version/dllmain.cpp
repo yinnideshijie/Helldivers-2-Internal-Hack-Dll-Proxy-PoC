@@ -179,13 +179,13 @@ DWORD WINAPI Payload(LPVOID lpParam)
 
                     BYTE SetHealthBytes[] =
                     {
-                        0x48, 0x85, 0xD2,                               // test rdx,rdx
-                        0x75, 0x0D,                                     // jz short @f
-                        0xB8, 0x0F, 0x27, 0x00, 0x00,                   //  mov eax,0000270F { 9999 }
-                        0x41, 0x89, 0x84, 0x8B, 0x28, 0x4C, 0x00, 0x00, //  mov [r11+rcx*4+00004C28],eax
-                                                                        // @@:
-                        0x48, 0x8B, 0x5C, 0x24, 0x20,                   // mov rbx,[rsp+20]
-                        0x48, 0x8B, 0x74, 0x24, 0x28,                   // mov rsi,[rsp+28]
+                        0x48, 0x85, 0xD2,                                                       // test rdx,rdx
+                        0x75, 0x0C,                                                             // jnz short @f
+                        0x41, 0xC7, 0x84, 0x8B, 0x28, 0x4C, 0x00, 0x00, 0x0F, 0x27, 0x00, 0x00, //   mov [r11+rcx*4+00004C28],#9999
+                                                                                                // @@:
+                        0x41, 0x8B, 0x84, 0x8B, 0x28, 0x4C, 0x00, 0x00,                         // mov eax,[r11+rcx*4+00004C28]
+                        0x48, 0x8B, 0x5C, 0x24, 0x20,                                           // mov rbx,[rsp+20]
+                        0x48, 0x8B, 0x74, 0x24, 0x28,                                           // mov rsi,[rsp+28]
                         0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //JMP return_SetHealth
                     };
 
