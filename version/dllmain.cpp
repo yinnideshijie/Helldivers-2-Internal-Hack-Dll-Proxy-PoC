@@ -582,7 +582,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     };
 
                     uintptr_t AllEquipment = Memory::FindPattern("game.dll", "CC CC CC CC CC CC CC CC CC CC CC 83 B9 ?? ?? ?? ?? 0C 75 2B 85 D2 74 27");
-                    Memory::Patch((LPVOID)(AllEquipment), AllEquipmentByte, 3);
+                    Memory::Patch((LPVOID)(AllEquipment+11), AllEquipmentByte, 3);
                     gData.AllEquipment = !gData.AllEquipment;
                     printf("[Active] Unlock All Equipment\n");
                 }
