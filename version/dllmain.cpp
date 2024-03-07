@@ -318,13 +318,13 @@ DWORD WINAPI Payload(LPVOID lpParam)
 
             if (checkboxes[i].title == "Inf Stratagems")
             {
-                if (!gData.InfStrategems)
+                if (!gData.InfStratagems)
                 {
-                    uintptr_t Strategems = Memory::FindPattern("game.dll", "0F 86 BF 01 00 00 0F");
-                    BYTE StrategemsPatch1[] = { 0x90, 0xE9 };
-                    Memory::Patch((LPVOID)(Strategems), StrategemsPatch1, 2);
-                    gData.InfStrategems = !gData.InfStrategems;
-                    printf("[Active] Infinite Strategems\n");
+                    uintptr_t Stratagems = Memory::FindPattern("game.dll", "0F 86 BF 01 00 00 0F");
+                    BYTE StratagemsPatch1[] = { 0x90, 0xE9 };
+                    Memory::Patch((LPVOID)(Stratagems), StratagemsPatch1, 2);
+                    gData.InfStratagems = !gData.InfStratagems;
+                    printf("[Active] Infinite Stratagems\n");
                 }
             }
 
