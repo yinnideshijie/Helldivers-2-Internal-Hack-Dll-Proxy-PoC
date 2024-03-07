@@ -27,6 +27,7 @@ class GameData
 		bool	AllStratagems = false;
 		bool	AllEquipment = false;
 		bool	AllArmor = false;
+		bool	Speedhack = false;
 
 		bool	OHK = false;
 };

@@ -83,6 +83,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
         , {_XOR_("Inf Syringes(Legit)"), false}
         , {_XOR_("Inf Stamina"), false}
         , {_XOR_("Inf Stratagems"), false}
+        , {_XOR_("Speed Hack X6"), false}
         , {_XOR_("Inf Mission Time"), false}
         //, {"One / Two Hit Kill ( Bile Titan Bug, Aim Only Head )", false}
         , {_XOR_("No Reload"), false}
@@ -429,6 +430,30 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     Memory::WriteAssemblyInstructions((uintptr_t)memory, InstantRailGun + 14, InstantRailGunByte, Memory::ArrayLength(InstantRailGunByte));
                     gData.InstantRailGun = !gData.InstantRailGun;
                     printf(_XOR_("[Active] Instant Railgun\n"));
+                }
+            }
+
+            
+            if (checkboxes[i].title == _XOR_("Speed Hack X6"))
+            {
+                if (!gData.Speedhack)
+                {
+                    BYTE SpeedhackByte[] =
+                    {
+                        0x41, 0xC7, 0x46, 0x0C, 0x00, 0x00, 0xC0, 0x40,
+                        0xF3, 0x41, 0x0F, 0x59, 0x56, 0x0C,
+                        0xF3, 0x41, 0x0F, 0x59, 0x56, 0x10,
+                        0x0F, 0x28, 0xE2,
+                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //JMP return_Railgun
+                    };
+
+                    uintptr_t Speedhack = Memory::FindPattern(_XOR_("game.dll"), _XOR_("F3 41 ?? ?? ?? ?? F3 41 ?? ?? ?? ?? 0F 28 ?? F3 0F ?? ?? 0F 5A"));
+
+                    LPVOID memory = Memory::AllocateMemory(Speedhack, sizeof(SpeedhackByte));
+                    Memory::CreateTrampoline(Speedhack, memory);
+                    Memory::WriteAssemblyInstructions((uintptr_t)memory, Speedhack + 15, SpeedhackByte, Memory::ArrayLength(SpeedhackByte));
+                    gData.Speedhack = !gData.Speedhack;
+                    printf(_XOR_("[Active] Speedhack x6\n"));
                 }
             }
 
