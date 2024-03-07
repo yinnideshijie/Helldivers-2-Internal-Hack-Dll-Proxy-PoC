@@ -581,7 +581,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                         0xB0, 0x01, 0xC3
                     };
 
-                    uintptr_t AllEquipment = Memory::FindPattern("game.dll", "CC CC CC CC CC CC CC CC CC CC CC 83 B9 ?? ?? ?? ?? 0C 75 2B 85 D2 74 27");
+                    uintptr_t AllEquipment = Memory::FindPattern("game.dll", "83 B9 ?? ?? ?? ?? ?? 75 ?? 85 D2 74 ?? 44 8B 89 ?? ?? ?? ?? 45 33 C0 45 85 C9 74 ?? 48 8D 81 ?? ?? ?? ?? 39 50 ?? 74 ?? 41 FF C0 48 83 C0 ?? 45 3B C1 72 ?? 32 C0 C3 8B 00 48 69 C8");
                     Memory::Patch((LPVOID)(AllEquipment+11), AllEquipmentByte, 3);
                     gData.AllEquipment = !gData.AllEquipment;
                     printf("[Active] Unlock All Equipment\n");
@@ -597,7 +597,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                         0xB0, 0x01, 0xC3
                     };
 
-                    uintptr_t AllArmor = Memory::FindPattern("game.dll", "48 83 EC 08 44 8B 49 ?? 45 33 C0");
+                    uintptr_t AllArmor = Memory::FindPattern("game.dll", "48 83 EC ?? 44 8B 49 ?? 45 33 C0");
                     Memory::Patch((LPVOID)(AllArmor), AllArmorByte, 3);
                     gData.AllArmor = !gData.AllArmor;
                     printf("[Active] Unlock All Armor\n");
