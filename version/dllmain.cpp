@@ -166,42 +166,38 @@ DWORD WINAPI Payload(LPVOID lpParam)
             {
                 if (!gData.InfHealth) // no need but its old code when activate using hotkey, but need to much hotkey for all feature
                 {
-                    BYTE InfHealthByte[] =
+                    BYTE WriteHealthBytes[] =
                     {
-                        0x41, 0x51,
-                        0x49, 0xB9, 0xE8, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                        0x4D, 0x39, 0x48, 0x14, 
-                        0x7C, 0x03,
-                        0x45, 0x89, 0x38,
-                        0x49, 0x8B, 0x84, 0xDE, 0x28, 0x04, 0x00, 0x00,
-                        0x8B, 0x48, 0x10,
-                        0x41, 0x59,
-                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00,  // JMP [rip+6]
-                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // Placeholder for the target address
+                        0x48, 0x85, 0xDB,                               // test rbx,rbx
+                        0x74, 0x03,                                     // jz short @f
+                        0x45, 0x89, 0x38,                               //  mov [r8],r15d
+                                                                        // @@:
+                        0x49, 0x8B, 0x84, 0xDE, 0x28, 0x04, 0x00, 0x00, // mov rax,[r14+rbx*8+00000428]
+                        0x8B, 0x48, 0x10,                               // mov ecx,[rax+10]
+                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //JMP return_WriteHealth
                     };
 
-                    BYTE InfHealthByte1[] =
+                    BYTE SetHealthBytes[] =
                     {
-                        0xB8, 0xE8, 0x03, 0x00, 0x00,
-                        0x41, 0x39, 0x84, 0x8B, 0x40, 0x4C, 0x00, 0x00,
-                        0x7F, 0x0D,
-                        0xB8, 0x0F, 0x27, 0x00, 0x00,
-                        0x41, 0x89, 0x84, 0x8B, 0x28, 0x4C, 0x00, 0x00,
-                        0x48, 0x8B, 0x5C, 0x24, 0x20,
-                        0x48, 0x8B, 0x74, 0x24, 0x28,
-                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00,  // JMP [rip+6]
-                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // Placeholder for the target address
+                        0x48, 0x85, 0xD2,                               // test rdx,rdx
+                        0x75, 0x0D,                                     // jz short @f
+                        0xB8, 0x0F, 0x27, 0x00, 0x00,                   //  mov eax,0000270F { 9999 }
+                        0x41, 0x89, 0x84, 0x8B, 0x28, 0x4C, 0x00, 0x00, //  mov [r11+rcx*4+00004C28],eax
+                                                                        // @@:
+                        0x48, 0x8B, 0x5C, 0x24, 0x20,                   // mov rbx,[rsp+20]
+                        0x48, 0x8B, 0x74, 0x24, 0x28,                   // mov rsi,[rsp+28]
+                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //JMP return_SetHealth
                     };
 
                     uintptr_t InfHealth = Memory::FindPattern(_XOR_("game.dll"), _XOR_("45 89 38 49 8B 84 DE 28 04 00 00"));
-                    LPVOID memory = Memory::AllocateMemory(InfHealth, 0x100);
+                    LPVOID memory = Memory::AllocateMemory(InfHealth, sizeof(WriteHealthBytes));
                     Memory::CreateTrampoline(InfHealth, memory);
-                    Memory::WriteAssemblyInstructions((uintptr_t)memory, InfHealth + 14, InfHealthByte, Memory::ArrayLength(InfHealthByte));
+                    Memory::WriteAssemblyInstructions((uintptr_t)memory, InfHealth + 14, WriteHealthBytes, Memory::ArrayLength(WriteHealthBytes));
 
-                    uintptr_t InfHealth1 = Memory::FindPattern(_XOR_("game.dll"), _XOR_("41 8B 84 8B 28 4C 00 00 48 8B 5C 24 20 48 8B 74 24 28"));
-                    memory = Memory::AllocateMemory(InfHealth1, 0x100);
+                    uintptr_t InfHealth1 = Memory::FindPattern(_XOR_("game.dll"), _XOR_("41 8B 84 8B 28 4C 00 00"));
+                    memory = Memory::AllocateMemory(InfHealth1, sizeof(SetHealthBytes));
                     Memory::CreateTrampoline(InfHealth1, memory);
-                    Memory::WriteAssemblyInstructions((uintptr_t)memory, InfHealth1 + 18, InfHealthByte1, Memory::ArrayLength(InfHealthByte1));
+                    Memory::WriteAssemblyInstructions((uintptr_t)memory, InfHealth1 + 18, SetHealthBytes, Memory::ArrayLength(SetHealthBytes));
 
                     gData.InfHealth = !gData.InfHealth;
                     //create trampolin
