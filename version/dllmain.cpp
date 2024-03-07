@@ -77,7 +77,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
         , {"Inf Syringes", false}
         , {"Inf Syringes(Legit)", false}
         , {"Inf Stamina", false}
-        , {"Inf Strategems", false}
+        , {"Inf Stratagems", false}
         , {"Inf Mission Time", false}
         //, {"One / Two Hit Kill ( Bile Titan Bug, Aim Only Head )", false}
         , {"No Reload", false}
@@ -203,7 +203,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 }
             }
 
-            if (checkboxes[i].title == "Inf Granades")
+            if (checkboxes[i].title == "Inf Grenades")
             {
                 if (!gData.InfGrenades)
                 {
@@ -214,7 +214,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 }
             }
 
-            if (checkboxes[i].title == "Inf Granades(Legit)")
+            if (checkboxes[i].title == "Inf Grenades(Legit)")
             {
                 if (!gData.InfGrenadesLegit && !gData.InfGrenades)
                 {
@@ -316,7 +316,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 }
             }
 
-            if (checkboxes[i].title == "Inf Strategems")
+            if (checkboxes[i].title == "Inf Stratagems")
             {
                 if (!gData.InfStrategems)
                 {
