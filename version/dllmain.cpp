@@ -19,7 +19,7 @@ void InitializeConsole() {
     FILE* pFile = nullptr;
     AllocConsole();
     //SetConsoleTitle(_XOR_(L"Helldivers 2 DLL Proxy PoC"));
-    freopen_s(&pFile, "CONOUT$", "w", stdout);
+    freopen_s(&pFile, _XOR_("CONOUT$"), _XOR_("w"), stdout);
 }
 
 void DestroyConsole()
@@ -83,7 +83,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
         , {_XOR_("Inf Syringes(Legit)"), false}
         , {_XOR_("Inf Stamina"), false}
         , {_XOR_("Inf Stratagems"), false}
-        , {_XOR_("Speed Hack X6"), false}
+        , {_XOR_("MoveSpeed X6"), false}
         , {_XOR_("Inf Mission Time"), false}
         //, {"One / Two Hit Kill ( Bile Titan Bug, Aim Only Head )", false}
         , {_XOR_("No Reload"), false}
@@ -430,7 +430,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
             }
 
             
-            if (checkboxes[i].title == _XOR_("Speed Hack X6"))
+            if (checkboxes[i].title == _XOR_("MoveSpeed X6"))
             {
                 if (!gData.Speedhack)
                 {
@@ -449,7 +449,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     Memory::CreateTrampoline(Speedhack, memory);
                     Memory::WriteAssemblyInstructions((uintptr_t)memory, Speedhack + 15, SpeedhackByte, Memory::ArrayLength(SpeedhackByte));
                     gData.Speedhack = !gData.Speedhack;
-                    printf(_XOR_("[Active] Speedhack x6\n"));
+                    printf(_XOR_("[Active] MoveSpeed x6\n"));
                 }
             }
 
@@ -465,7 +465,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     uintptr_t Recoil = Memory::FindPattern(_XOR_("game.dll"), _XOR_("44 8B 7C 24 ?? 41 3B 46 08"));
                     Memory::Patch((LPVOID)(Recoil+9), RecoilByte, 1);
                     gData.Recoil = !gData.Recoil;
-                    printf("[Active] No Recoil\n");
+                    printf(_XOR_("[Active] No Recoil\n"));
                 }
             }
 
@@ -567,7 +567,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
 
                     uintptr_t ShowAllMapIconsAddr = Memory::FindPattern(_XOR_("game.dll"), _XOR_("41 0F B6 44 97 23"));
                     uintptr_t aob_CheckIfAlienHivesAreObstructed = Memory::FindPattern(_XOR_("game.dll"), "41 80 BE 3C BA 07 00 00");
-                    uintptr_t aob_CheckIfMinorInterestBlipIsDiscovered = Memory::FindPattern(_XOR_("game.dll"), "0F 85 ?? ?? ?? ?? 48 8B 44 24 ?? 80 78 29 00");
+                    uintptr_t aob_CheckIfMinorInterestBlipIsDiscovered = Memory::FindPattern(_XOR_("game.dll"), _XOR_("0F 85 ?? ?? ?? ?? 48 8B 44 24 ?? 80 78 29 00"));
                     uintptr_t aob_GetMinorInterestBlipIcon = Memory::FindPattern(_XOR_("game.dll"), _XOR_("0F 84 ?? ?? ?? ?? 48 8B 4C 24 ?? F3 41 0F 10 4F"));
                     uintptr_t aob_CheckMissionBlip = Memory::FindPattern(_XOR_("game.dll"), _XOR_("0F 85 59 02 00 00 49 8D"));
                      
