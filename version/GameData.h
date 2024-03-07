@@ -23,6 +23,10 @@ class GameData
 		bool	JetpackNoCD = false;
 		bool	ShieldNoCD = false;
 		bool	InstantRailGun = false;
-		bool	OHK = false;
 		bool	ShowAllMapIcons = false;
+		bool	AllStratagems = false;
+		bool	AllEquipment = false;
+		bool	AllArmor = false;
+
+		bool	OHK = false;
 };

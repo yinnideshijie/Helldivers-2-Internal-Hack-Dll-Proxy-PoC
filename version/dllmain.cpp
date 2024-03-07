@@ -70,8 +70,8 @@ DWORD WINAPI Payload(LPVOID lpParam)
     //Console Menu
     std::vector<Checkbox> checkboxes = { 
           {"Inf Health", false}
-        , {"Inf Granades", false}
-        , {"Inf Granades(Legit)", false}
+        , {"Inf Grenades", false}
+        , {"Inf Grenades(Legit)", false}
         , {"Inf Ammo", false}
         , {"Inf Ammo(Legit)", false}
         , {"Inf Syringes", false}
@@ -92,6 +92,9 @@ DWORD WINAPI Payload(LPVOID lpParam)
         , {"No Stationary Turret Overheat", false}
         , {"No Backpack Shield Cooldown", false}
         , {"No JetPack Cooldown", false}
+        , {"All Stratagems in Loadout", false}
+        , {"All Equipment in Armory", false}
+        , {"All Armor in Armory", false}
     
     }; // Initialize all checkboxes to unchecked
     const int numCheckboxes = checkboxes.size();
@@ -499,6 +502,7 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     printf("[Active] Backpack Shield No Cooldown\n");
                 }
             }
+            
 
             if (checkboxes[i].title == "Inf Backpack")
             {
@@ -549,6 +553,54 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     Memory::Patch((LPVOID)(aob_CheckMissionBlip), ShowAllMapIconsByte2n4, 2);
                     gData.ShowAllMapIcons = !gData.ShowAllMapIcons;
                     printf("[Active] Show All Map Icons\n");
+                }
+            }
+
+            if (checkboxes[i].title == "All Stratagems in Loadout")
+            {
+                if (!gData.AllStratagems)
+                {
+                    BYTE AllStratagemsByte[] =
+                    {
+                        0xB0, 0x01, 0xC3
+                    };
+
+                    uintptr_t AllStratagems = Memory::FindPattern("game.dll", "48 89 5C 24 ?? 48 8B D9 85 D2 75 09");
+                    Memory::Patch((LPVOID)(AllStratagems), AllStratagemsByte, 3);
+                    gData.AllStratagems = !gData.AllStratagems;
+                    printf("[Active] Unlock All Stratagems\n");
+                }
+            }
+
+            if (checkboxes[i].title == "All Equipment in Armory")
+            {
+                if (!gData.AllEquipment)
+                {
+                    BYTE AllEquipmentByte[] =
+                    {
+                        0xB0, 0x01, 0xC3
+                    };
+
+                    uintptr_t AllEquipment = Memory::FindPattern("game.dll", "CC CC CC CC CC CC CC CC CC CC CC 83 B9 ?? ?? ?? ?? 0C 75 2B 85 D2 74 27");
+                    Memory::Patch((LPVOID)(AllEquipment), AllEquipmentByte, 3);
+                    gData.AllEquipment = !gData.AllEquipment;
+                    printf("[Active] Unlock All Equipment\n");
+                }
+            }
+
+            if (checkboxes[i].title == "All Armor in Armory")
+            {
+                if (!gData.AllArmor)
+                {
+                    BYTE AllArmorByte[] =
+                    {
+                        0xB0, 0x01, 0xC3
+                    };
+
+                    uintptr_t AllArmor = Memory::FindPattern("game.dll", "48 83 EC 08 44 8B 49 ?? 45 33 C0");
+                    Memory::Patch((LPVOID)(AllArmor), AllArmorByte, 3);
+                    gData.AllArmor = !gData.AllArmor;
+                    printf("[Active] Unlock All Armor\n");
                 }
             }
 
