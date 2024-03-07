@@ -9,14 +9,18 @@
 //Console Menu
 std::vector<Checkbox> checkboxes = { 
       {"Inf Health", false}
-    , {"Inf Granades", false}
+    , {"Inf Grenades", false}
+    , {"Inf Grenades(Legit)", false}
     , {"Inf Ammo", false}
+    , {"Inf Ammo(Legit)", false}
     , {"Inf Syringes", false}
+    , {"Inf Syringes(Legit)", false}
     , {"Inf Stamina", false}
-    , {"Inf Strategems", false}
+    , {"Inf Stratagems", false}
     , {"Inf Mission Time", false}
     , {"No Reload", false}
     , {"Max Resources", false}
+    , {"Add 5 Samples", false}
     , {"No Recoil", false}
     , {"Inf Backpack", false}
     , {"Inf Special Weapon", false}
@@ -26,6 +30,9 @@ std::vector<Checkbox> checkboxes = {
     , {"No Stationary Turret Overheat", false}
     , {"No Backpack Shield Cooldown", false}
     , {"No JetPack Cooldown", false}
+    , {"All Stratagems in Loadout", false}
+    , {"All Equipment in Armory", false}
+    , {"All Armor in Armory", false}
 
 };
 ```
