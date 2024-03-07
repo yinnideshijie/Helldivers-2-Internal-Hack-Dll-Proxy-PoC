@@ -144,6 +144,7 @@
     <ClInclude Include="Memory.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="version.h" />
+    <ClInclude Include="xorstr.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
