@@ -4,6 +4,7 @@
 #include "string"
 #include <Psapi.h>
 #include <vector>
+#include "xorstr.hpp"
 
 namespace Memory
 {
@@ -11,7 +12,7 @@ namespace Memory
 		// Get the base address of the module
 		HMODULE moduleHandle = GetModuleHandleA(moduleName);
 		if (!moduleHandle) {
-			std::cerr << "Failed to get module handle." << std::endl;
+			std::cerr << _XOR_("Failed to get module handle.") << std::endl;
 			return 0;
 		}
 
@@ -47,7 +48,7 @@ namespace Memory
 			}
 		}
 
-		std::cerr << "Pattern not found." << std::endl;
+		std::cerr << _XOR_("Pattern not found.") << std::endl;
 		return 0;
 	}
 
