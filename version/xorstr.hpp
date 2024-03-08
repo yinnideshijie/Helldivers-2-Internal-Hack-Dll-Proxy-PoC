@@ -26,6 +26,7 @@
 */
 
 #include <Windows.h>
+#include <stdlib.h>
 
 #define XORSTR_INLINE	__forceinline
 #define XORSTR_NOINLINE __declspec( noinline )
