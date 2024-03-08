@@ -48,7 +48,8 @@ std::vector<Checkbox> checkboxes = {
 ### Doesnt need old exe, you can use latest exe.
 
 # Building 
-You don't need to build this in Visual Studio, the most recent versions are posted here:\ https://github.com/emoisback/Helldivers-2-Internal-Hack-Dll-Proxy-PoC/actions \
+You don't need to build this in Visual Studio, the most recent versions are posted here: \
+https://github.com/emoisback/Helldivers-2-Internal-Hack-Dll-Proxy-PoC/actions \
 Because github automatically builds the master branch, you can:
 - Fork the repository. 
 - Go to the Actions tab and make sure workflow is enabled.
